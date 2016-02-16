@@ -1,0 +1,19 @@
+# If true, log debug messages.
+debug: false
+
+# If true, allow players to match with themselves with firework effects.
+# Players can always give themselves hearts, regardless.
+self_match: false
+
+# If true, the only projectile that signifies love is an arrow.
+only_arrows_love: false
+
+tracking:
+  # Duration of hearts shown on player in milliseconds.
+  player_ms: 20000
+
+  # Duration of hearts shown on mob in milliseconds.
+  mob_ms: 120000
+
+  # Duration of hearts shown on projectile in milliseconds.
+  projectile_ms: 30000

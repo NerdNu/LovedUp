@@ -1,0 +1,55 @@
+name: LovedUp
+version: 0.1.0
+author: totemo
+description: Nonsense.
+website: http://github.com/totemo/LovedUp
+main: io.totemo.lovedup.LovedUp
+permissions:
+  lovedup.admin:
+    description: Permission to administer the plugin.
+    default: op
+
+  lovedup.loveall:
+    description: Permission to love everyone simultaneously.
+    default: op
+
+  lovedup.love:
+    description: Permission to love another player.
+    default: true
+
+  lovedup.exempt:
+    description: Players with this permission do not show hearts or fireworks.
+    default: false
+
+commands:
+  lovedup:
+    description: Main plugin command.
+    permission: lovedup.admin
+    usage: |
+      /<command> reload: Reload the configuration.
+      /<command> debug: Toggle debug logging.
+
+  loveall:
+    description: Send love to all players.
+    permission: lovedup.loveall
+    usage: |
+      /<command> <player>: Send your love, anonymously to everyone.
+
+  sparkall:
+    description: Send fireworks and a coloured message to all players.
+    permission: lovedup.loveall
+    usage: |
+      /<command> [<message>]: Send fireworks and a coloured (by default pink) message to all players.
+
+  love:
+    description: Send love to a player.
+    permission: lovedup.love
+    usage: |
+      /<command> <player>: Send your love, anonymously to a player.
+
+  unlovable:
+    description: Turn on or off receiving love (hearts, fireworks, messages).
+    permission: lovedup.love
+    aliases: [unloveable]
+    usage: |
+      /<command>: Turn on or off receiving love (hearts, fireworks, messages).
