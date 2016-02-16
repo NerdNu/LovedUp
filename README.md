@@ -13,7 +13,7 @@ Features:
  * If a projectile hits a player, the victim shows heart particles for a
    configurable period.
 
- * The `/love <player-partial-name>` command anoonymously sends heart
+ * The `/love <player-partial-name>` command anonymously sends heart
    particles to the player whose name most closely matches the name argument.
    The recipient is not informed of the identity of the sender.
 
@@ -22,7 +22,7 @@ Features:
 
  * If two players `/love` each other, or if they hit each other with
    projectiles, then they "match" and each player sees a message with the name
-   of the their admirer and a firework effect.
+   of their admirer and a firework effect.
 
    * Sent `/love` and projectile hits are remembered until the two parties
      match or the server restarts.
