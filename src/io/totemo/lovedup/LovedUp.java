@@ -426,16 +426,13 @@ public class LovedUp extends JavaPlugin implements Listener {
             }
 
             builder.with(FIREWORK_TYPES[_random.nextInt(FIREWORK_TYPES.length)]);
+            builder.withColor(Color.fromRGB(255, _random.nextInt(64), _random.nextInt(64)));
             final int primaryColors = 1 + _random.nextInt(4);
             for (int i = 0; i < primaryColors; ++i) {
-                builder.withColor(Color.fromRGB(255, _random.nextInt(64), _random.nextInt(64)));
+                builder.withColor(Color.fromRGB(255, 128 + _random.nextInt(64), 128 + _random.nextInt(64)));
             }
 
-            final int fadeColors = 1 + _random.nextInt(3);
             builder.withFade(Color.fromRGB(255, 255, 255));
-            for (int i = 0; i < fadeColors; ++i) {
-                builder.withFade(Color.fromRGB(255, 128 + _random.nextInt(64), 128 + _random.nextInt(64)));
-            }
 
             FireworkMeta meta = firework.getFireworkMeta();
             meta.setPower(_random.nextInt(2));
