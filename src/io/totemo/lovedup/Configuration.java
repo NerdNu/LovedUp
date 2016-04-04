@@ -29,14 +29,14 @@ public class Configuration {
      * Players can always love each other with the /love command, regardless.
      */
     public boolean ONLY_ARROWS_LOVE;
-    
+
     /**
-     * Set to true to enable effects on arrows
+     * Set to true to enable effects on arrows.
      */
     public boolean ENABLE_ARROW_EFFECTS;
-    
+
     /**
-     * Set to true to enable other projectile effects (not arrows)
+     * Set to true to enable other projectile effects (not arrows).
      */
     public boolean ENABLE_OTHER_PROJECTILE_EFFECTS;
 
