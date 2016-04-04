@@ -42,14 +42,14 @@ Features:
 Commands
 --------
 
-| Command                        | Permission     | Description                                    |
-| ------------------------------ | -------------- | ---------------------------------------------- |
-| `/love <player>`          | loveall.love    | Send your love, anonymously to a player.       |
-| `/unlovable`               | loveall.love    | Toggle one's own susceptibility to projectiles, `/love`, `/loveall` and `/sparkall` until the next restart. |
-| `/unloveable`              | loveall.love    | Alias of `/unlovable`. |
-| `/loveall`                  | loveall.loveall | Send hearts, anonymously to all players except the exempt and the unlovable. |
-| `/sparkall [<message>]` | loveall.loveall | Send hearts, fireworks and an optional message, anonymously to all players except the exempt and the unlovable. |
-| `/lovedup help`           | loveall.admin   | Show help for the `/lovedup` command.       |
+| Command                   | Permission      | Description                              |
+| ------------------------- | --------------- | ---------------------------------------- |
+| `/love <player>`          | loveall.love    | Send your love, anonymously to a player. |
+| `/unlovable`              | loveall.love    | Toggle one's own susceptibility to projectiles, `/love`, `/loveall` and `/sparkall` until the next restart. |
+| `/unloveable`             | loveall.love    | Alias of `/unlovable`. |
+| `/loveall`                | loveall.loveall | Send hearts, anonymously to all players except the exempt and the unlovable. |
+| `/sparkall [<message>]`   | loveall.loveall | Send hearts, fireworks and an optional message, anonymously to all players except the exempt and the unlovable. |
+| `/lovedup help`           | loveall.admin   | Show help for the `/lovedup` command. |
 | `/lovedup reload`         | loveall.admin   | Reload the configuration file. |
 
 
@@ -65,6 +65,14 @@ Configuration Settings
 
  * `only_arrows_love: false`
    * If true, the only projectile that signifies love is an arrow.
+
+ * `enable_arrow_effects: true`
+   * If true, shot arrows trail hearts and impart love to players on impact.
+
+ * `enable_other_projectile_effects: true`
+   * If true, projectiles other than arrows (e.g. snowballs, eggs, fishing bobs)
+     trail hearts and impart love to players on impact.
+   * However, note that ender pearls *never( show heart trails or love players.
 
  * `tracking.player_ms: 20000`
    * Duration of hearts shown on player in milliseconds.
