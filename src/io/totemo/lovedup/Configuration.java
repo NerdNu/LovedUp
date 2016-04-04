@@ -29,6 +29,16 @@ public class Configuration {
      * Players can always love each other with the /love command, regardless.
      */
     public boolean ONLY_ARROWS_LOVE;
+    
+    /**
+     * Set to true to enable effects on arrows
+     */
+    public boolean ENABLE_ARROW_EFFECTS;
+    
+    /**
+     * Set to true to enable other projectile effects (not arrows)
+     */
+    public boolean ENABLE_OTHER_PROJECTILE_EFFECTS;
 
     /**
      * Duration to show hearts on a player in milliseconds.
@@ -64,6 +74,8 @@ public class Configuration {
         DEBUG = _plugin.getConfig().getBoolean("debug");
         SELF_MATCH = _plugin.getConfig().getBoolean("self_match");
         ONLY_ARROWS_LOVE = _plugin.getConfig().getBoolean("only_arrows_love");
+        ENABLE_ARROW_EFFECTS = _plugin.getConfig().getBoolean("enable_arrow_effects");
+        ENABLE_OTHER_PROJECTILE_EFFECTS = _plugin.getConfig().getBoolean("enable_other_projectile_effects");
         PLAYER_MS = _plugin.getConfig().getInt("tracking.player_ms");
         MOB_MS = _plugin.getConfig().getInt("tracking.mob_ms");
         PROJECTILE_MS = _plugin.getConfig().getInt("tracking.projectile_ms");
@@ -77,6 +89,8 @@ public class Configuration {
         _plugin.getConfig().set("debug", DEBUG);
         _plugin.getConfig().set("self_match", SELF_MATCH);
         _plugin.getConfig().set("only_arrows_love", ONLY_ARROWS_LOVE);
+        _plugin.getConfig().set("enable_arrow_effects", ENABLE_ARROW_EFFECTS);
+        _plugin.getConfig().set("enable_other_projectile_effects", ENABLE_OTHER_PROJECTILE_EFFECTS);
         _plugin.getConfig().set("tracking.player_ms", PLAYER_MS);
         _plugin.getConfig().set("tracking.mob_ms", MOB_MS);
         _plugin.getConfig().set("tracking.projectile_ms", PROJECTILE_MS);

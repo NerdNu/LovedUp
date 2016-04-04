@@ -8,6 +8,12 @@ self_match: false
 # If true, the only projectile that signifies love is an arrow.
 only_arrows_love: false
 
+# Enable arrow effects
+enable_arrow_effects: true
+
+# Enable effects of projectiles other than arrows (snow balls, eggs, etc)
+enable_other_projectile_effects: true
+
 tracking:
   # Duration of hearts shown on player in milliseconds.
   player_ms: 20000

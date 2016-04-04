@@ -430,7 +430,12 @@ public class LovedUp extends JavaPlugin implements Listener {
      */
     @EventHandler(ignoreCancelled = true)
     public void onProjectileLaunch(ProjectileLaunchEvent event) {
-        _trackedProjectiles.put(event.getEntity(), System.currentTimeMillis() + CONFIG.PROJECTILE_MS);
+    	Projectile projectile = event.getEntity();    	
+    	if (projectile instanceof Arrow && CONFIG.ENABLE_ARROW_EFFECTS ||
+    		!(projectile instanceof Arrow) && CONFIG.ENABLE_OTHER_PROJECTILE_EFFECTS)
+		{
+    		_trackedProjectiles.put(projectile, System.currentTimeMillis() + CONFIG.PROJECTILE_MS);
+		}
     }
 
     // ------------------------------------------------------------------------
@@ -463,6 +468,14 @@ public class LovedUp extends JavaPlugin implements Listener {
 
             if (CONFIG.ONLY_ARROWS_LOVE && !(projectile instanceof Arrow)) {
                 return;
+            }
+            
+            if (!CONFIG.ENABLE_ARROW_EFFECTS && (projectile instanceof Arrow)) {
+            	return; // Only arrows with effects love
+            }
+            
+            if (!CONFIG.ENABLE_OTHER_PROJECTILE_EFFECTS && !(projectile instanceof Arrow)) {
+            	return; // only other projectiles with effects love
             }
 
             if (projectile.getShooter() instanceof Player) {
