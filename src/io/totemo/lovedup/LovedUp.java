@@ -124,6 +124,86 @@ public class LovedUp extends JavaPlugin implements Listener {
 
     // ------------------------------------------------------------------------
     /**
+     * When a projectile is launched, add it to the tracked projectiles.
+     */
+    @EventHandler(ignoreCancelled = true)
+    protected void onProjectileLaunch(ProjectileLaunchEvent event) {
+        Projectile projectile = event.getEntity();
+        if (CONFIG.ENABLE_ARROW_EFFECTS && projectile instanceof Arrow ||
+            CONFIG.ENABLE_OTHER_PROJECTILE_EFFECTS && !(projectile instanceof Arrow)) {
+            _trackedProjectiles.put(projectile, System.currentTimeMillis() + CONFIG.PROJECTILE_MS);
+        }
+    }
+
+    // ------------------------------------------------------------------------
+    /**
+     * When a projectile hits, remove it from tracking.
+     */
+    @EventHandler(ignoreCancelled = true)
+    protected void onProjectileHit(ProjectileHitEvent event) {
+        Projectile projectile = event.getEntity();
+        _trackedProjectiles.remove(projectile);
+    }
+
+    // ------------------------------------------------------------------------
+    /**
+     * When a player shoots another player, treat that the same as if the
+     * shooter ran /love <victim>.
+     *
+     * This event is registered as the lowest priority (handled first) and also
+     * ignores cancellation of the other event by other plugins, so that it is
+     * guaranteed to see things happen even if they are cancelled by another
+     * plugin, e.g. WorldGuard.
+     */
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    protected void onPlayerShootPlayer(EntityDamageByEntityEvent event) {
+        if (event.getEntity() instanceof Player && event.getDamager() instanceof Projectile) {
+            Projectile projectile = (Projectile) event.getDamager();
+            if (projectile instanceof EnderPearl) {
+                return;
+            }
+
+            if (CONFIG.ONLY_ARROWS_LOVE && !(projectile instanceof Arrow)) {
+                return;
+            }
+
+            if (!CONFIG.ENABLE_ARROW_EFFECTS && projectile instanceof Arrow) {
+                return;
+            }
+
+            if (!CONFIG.ENABLE_OTHER_PROJECTILE_EFFECTS && !(projectile instanceof Arrow)) {
+                return;
+            }
+
+            if (projectile.getShooter() instanceof Player) {
+                Player attacker = (Player) projectile.getShooter();
+                Player victim = (Player) event.getEntity();
+                sendLove(attacker, victim);
+            }
+        }
+    } // onPlayerShootPlayer
+
+    // ------------------------------------------------------------------------
+    /**
+     * Called when a mob targets or untargets a player or mob.
+     *
+     * Handle with highest priority so that it will already be cancelled if the
+     * player is in ModMode.
+     */
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    protected void onEntityTarget(EntityTargetEvent event) {
+        if (event.getEntity() instanceof LivingEntity) {
+            LivingEntity attacker = (LivingEntity) event.getEntity();
+            if (event.getReason() == TargetReason.FORGOT_TARGET) {
+                _trackedLiving.remove(attacker);
+            } else {
+                _trackedLiving.put(attacker, System.currentTimeMillis() + CONFIG.MOB_MS);
+            }
+        }
+    }
+
+    // ------------------------------------------------------------------------
+    /**
      * Handle the /love [<player>] command.
      *
      * @param sender command sender.
@@ -422,86 +502,6 @@ public class LovedUp extends JavaPlugin implements Listener {
     protected double scaledRandom(double amplitude) {
         double random = _random.nextDouble();
         return (random - 0.5) * 2 * amplitude;
-    }
-
-    // ------------------------------------------------------------------------
-    /**
-     * When a projectile is launched, add it to the tracked projectiles.
-     */
-    @EventHandler(ignoreCancelled = true)
-    public void onProjectileLaunch(ProjectileLaunchEvent event) {
-        Projectile projectile = event.getEntity();
-        if (CONFIG.ENABLE_ARROW_EFFECTS && projectile instanceof Arrow ||
-            CONFIG.ENABLE_OTHER_PROJECTILE_EFFECTS && !(projectile instanceof Arrow)) {
-            _trackedProjectiles.put(projectile, System.currentTimeMillis() + CONFIG.PROJECTILE_MS);
-        }
-    }
-
-    // ------------------------------------------------------------------------
-    /**
-     * When a projectile hits, remove it from tracking.
-     */
-    @EventHandler(ignoreCancelled = true)
-    public void onProjectileHit(ProjectileHitEvent event) {
-        Projectile projectile = event.getEntity();
-        _trackedProjectiles.remove(projectile);
-    }
-
-    // ------------------------------------------------------------------------
-    /**
-     * When a player shoots another player, treat that the same as if the
-     * shooter ran /love <victim>.
-     *
-     * This event is registered as the lowest priority (handled first) and also
-     * ignores cancellation of the other event by other plugins, so that it is
-     * guaranteed to see things happen even if they are cancelled by another
-     * plugin, e.g. WorldGuard.
-     */
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-    public void onPlayerShootPlayer(EntityDamageByEntityEvent event) {
-        if (event.getEntity() instanceof Player && event.getDamager() instanceof Projectile) {
-            Projectile projectile = (Projectile) event.getDamager();
-            if (projectile instanceof EnderPearl) {
-                return;
-            }
-
-            if (CONFIG.ONLY_ARROWS_LOVE && !(projectile instanceof Arrow)) {
-                return;
-            }
-
-            if (!CONFIG.ENABLE_ARROW_EFFECTS && projectile instanceof Arrow) {
-                return;
-            }
-
-            if (!CONFIG.ENABLE_OTHER_PROJECTILE_EFFECTS && !(projectile instanceof Arrow)) {
-                return;
-            }
-
-            if (projectile.getShooter() instanceof Player) {
-                Player attacker = (Player) projectile.getShooter();
-                Player victim = (Player) event.getEntity();
-                sendLove(attacker, victim);
-            }
-        }
-    } // onPlayerShootPlayer
-
-    // ------------------------------------------------------------------------
-    /**
-     * Called when a mob targets or untargets a player or mob.
-     *
-     * Handle with highest priority so that it will already be cancelled if the
-     * player is in ModMode.
-     */
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
-    protected void onEntityTarget(EntityTargetEvent event) {
-        if (event.getEntity() instanceof LivingEntity) {
-            LivingEntity attacker = (LivingEntity) event.getEntity();
-            if (event.getReason() == TargetReason.FORGOT_TARGET) {
-                _trackedLiving.remove(attacker);
-            } else {
-                _trackedLiving.put(attacker, System.currentTimeMillis() + CONFIG.MOB_MS);
-            }
-        }
     }
 
     // ------------------------------------------------------------------------
