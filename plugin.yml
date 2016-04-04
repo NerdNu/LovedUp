@@ -1,9 +1,11 @@
-name: LovedUp
-version: 0.2.0
+name: ${project.name}
+version: ${project.version}
 author: totemo
-description: Nonsense.
-website: http://github.com/totemo/LovedUp
+authors: [totemo]
+description: ${project.description}
+website: ${project.url}
 main: io.totemo.lovedup.LovedUp
+
 permissions:
   lovedup.admin:
     description: Permission to administer the plugin.
