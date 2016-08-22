@@ -4,7 +4,7 @@
 	<groupId>io.totemo</groupId>
 	<artifactId>LovedUp</artifactId>
 	<name>LovedUp</name>
-	<version>0.2.1</version>
+	<version>0.3.0</version>
 	<packaging>jar</packaging>
 	<description>Complete bloody nonsense.</description>
 	<url>https://github.com/totemo/LovedUp</url>
@@ -26,7 +26,7 @@
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>
-			<version>1.8.7-R0.1-SNAPSHOT</version>
+			<version>1.10.2-R0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 	<build>

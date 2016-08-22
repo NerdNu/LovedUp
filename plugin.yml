@@ -19,6 +19,10 @@ permissions:
     description: Permission to love another player.
     default: true
 
+  lovedup.hate:
+    description: Permission to hate another player.
+    default: true
+
   lovedup.exempt:
     description: Players with this permission do not show hearts or fireworks.
     default: false
@@ -49,9 +53,22 @@ commands:
     usage: |
       /<command> <player>: Send your love, anonymously to a player.
 
+  hate:
+    description: Send hate to a player
+    permission: lovedup.hate
+    usage: |
+      /<command> <player>: Send your hate, anonymously to a player.
+
   unlovable:
     description: Turn on or off receiving love (hearts, fireworks, messages).
     permission: lovedup.love
     aliases: [unloveable]
     usage: |
       /<command>: Turn on or off receiving love (hearts, fireworks, messages).
+
+  unhateable:
+    description: Turn on or off receiving hate (fire, evil, messages).
+    permission: lovedup.hate
+    aliases: [unhateable]
+    usage: |
+      /<command>: Turn on or off receiving hate (fire, evil, messages).
