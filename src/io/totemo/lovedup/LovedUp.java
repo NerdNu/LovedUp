@@ -616,8 +616,6 @@ public class LovedUp extends JavaPlugin implements Listener {
      *        in blocks.
      * @param yBias additional fixed Y coordinate offset.
      * @param radius radius of visibility of the effect in blocks.
-     * @param effect The effect to display.
-     * @param data Effect a data bit needed for some effects.
      * @param checkExempt if true, the entities are checked for exempted players
      *        who will not show hearts.
      */
