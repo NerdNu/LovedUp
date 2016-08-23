@@ -54,7 +54,7 @@ commands:
       /<command> <player>: Send your love, anonymously to a player.
 
   hate:
-    description: Send hate to a player
+    description: Send hate to a player.
     permission: lovedup.hate
     usage: |
       /<command> <player>: Send your hate, anonymously to a player.
@@ -69,6 +69,6 @@ commands:
   unhateable:
     description: Turn on or off receiving hate (fire, evil, messages).
     permission: lovedup.hate
-    aliases: [unhateable]
+    aliases: [unhatable]
     usage: |
       /<command>: Turn on or off receiving hate (fire, evil, messages).
