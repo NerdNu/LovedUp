@@ -33,6 +33,8 @@ import org.bukkit.event.entity.EntityTargetEvent.TargetReason;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.inventory.meta.FireworkMeta;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 
 // ----------------------------------------------------------------------------
@@ -199,6 +201,20 @@ public class LovedUp extends JavaPlugin implements Listener {
             } else {
                 _trackedLiving.put(attacker, System.currentTimeMillis() + CONFIG.MOB_MS);
             }
+        }
+    }
+
+    // ------------------------------------------------------------------------
+    /**
+     * Cancel damage to players by firework entities that have been tagged with
+     * this plugin's metadata value.
+     */
+    @EventHandler(ignoreCancelled = true)
+    protected void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+        if (event.getEntity() instanceof Player &&
+            event.getDamager() instanceof Firework &&
+            event.getDamager().getMetadata(META_KEY).size() != 0) {
+            event.setCancelled(true);
         }
     }
 
@@ -417,6 +433,7 @@ public class LovedUp extends JavaPlugin implements Listener {
         World world = origin.getWorld();
         Firework firework = (Firework) world.spawnEntity(origin, EntityType.FIREWORK);
         if (firework != null) {
+            firework.setMetadata(META_KEY, _metaValue);
             FireworkEffect.Builder builder = FireworkEffect.builder();
             if (Math.random() < 0.3) {
                 builder.withFlicker();
@@ -458,7 +475,7 @@ public class LovedUp extends JavaPlugin implements Listener {
      *        who will not show hearts.
      */
     protected <T extends Entity> void showHearts(HashMap<T, Long> targets, double wobble,
-    double yBias, int radius, boolean checkExempt) {
+                                                 double yBias, int radius, boolean checkExempt) {
         long now = System.currentTimeMillis();
         ArrayList<T> removed = new ArrayList<T>();
         for (Entry<T, Long> entry : targets.entrySet()) {
@@ -506,6 +523,17 @@ public class LovedUp extends JavaPlugin implements Listener {
      * Firework types.
      */
     protected static final FireworkEffect.Type[] FIREWORK_TYPES = { Type.BALL, Type.BALL_LARGE, Type.STAR, Type.BURST };
+
+    /**
+     * Metadata key applied to fireworks, used to prevent LovedUp fireworks from
+     * damaging players.
+     */
+    protected static final String META_KEY = "LovedUp_FW";
+
+    /**
+     * Shared metadata value.
+     */
+    protected MetadataValue _metaValue = new FixedMetadataValue(this, null);
 
     /**
      * Random number generator.
