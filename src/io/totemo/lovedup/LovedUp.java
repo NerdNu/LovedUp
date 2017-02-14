@@ -206,13 +206,12 @@ public class LovedUp extends JavaPlugin implements Listener {
 
     // ------------------------------------------------------------------------
     /**
-     * Cancel damage to players by firework entities that have been tagged with
+     * Cancel damage to entities by firework entities that have been tagged with
      * this plugin's metadata value.
      */
     @EventHandler(ignoreCancelled = true)
     protected void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if (event.getEntity() instanceof Player &&
-            event.getDamager() instanceof Firework &&
+        if (event.getDamager() instanceof Firework &&
             event.getDamager().getMetadata(META_KEY).size() != 0) {
             event.setCancelled(true);
         }
