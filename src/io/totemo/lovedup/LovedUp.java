@@ -1,8 +1,8 @@
 package io.totemo.lovedup;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Random;
 
@@ -77,10 +77,18 @@ public class LovedUp extends JavaPlugin implements Listener {
         } else if (command.getName().equalsIgnoreCase("love")) {
             cmdLove(sender, args);
             return true;
+            
+        } else if (command.getName().equalsIgnoreCase("hate")) {
+        	cmdHate(sender, args);
+        	return true;
 
         } else if (command.getName().equalsIgnoreCase("unlovable")) {
             cmdUnlovable(sender);
             return true;
+        
+        } else if (command.getName().equalsIgnoreCase("unhateable")) {
+        	cmdUnhateable(sender);
+        	return true;
         }
 
         sender.sendMessage(ChatColor.RED + "Invalid command syntax.");
@@ -100,14 +108,14 @@ public class LovedUp extends JavaPlugin implements Listener {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
             @Override
             public void run() {
-                showHearts(_trackedProjectiles, 0.3, 0, 64, false);
+                showEffects(_trackedProjectiles, 0.3, 0, 64, false);
             }
         }, 1, 1);
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
             @Override
             public void run() {
-                showHearts(_trackedLiving, 1.25, 1.0, 32, true);
+                showEffects(_trackedLiving, 1.25, 1.0, 32, true);
             }
         }, 2, 2);
 
@@ -133,7 +141,10 @@ public class LovedUp extends JavaPlugin implements Listener {
         Projectile projectile = event.getEntity();
         if (CONFIG.ENABLE_ARROW_EFFECTS && projectile instanceof Arrow ||
             CONFIG.ENABLE_OTHER_PROJECTILE_EFFECTS && !(projectile instanceof Arrow)) {
-            _trackedProjectiles.put(projectile, System.currentTimeMillis() + CONFIG.PROJECTILE_MS);
+            long endTime = System.currentTimeMillis() + CONFIG.PROJECTILE_MS;
+            TrackedEffect tEffect = new TrackedEffect(endTime, Effect.HEART, 0);
+            _trackedProjectiles.put(projectile, tEffect);
+            
         }
     }
 
@@ -199,7 +210,9 @@ public class LovedUp extends JavaPlugin implements Listener {
             if (event.getReason() == TargetReason.FORGOT_TARGET) {
                 _trackedLiving.remove(attacker);
             } else {
-                _trackedLiving.put(attacker, System.currentTimeMillis() + CONFIG.MOB_MS);
+                long endTime = System.currentTimeMillis() + CONFIG.MOB_MS;
+                TrackedEffect tEffect = new TrackedEffect(endTime, Effect.HEART, 0);
+                _trackedLiving.put(attacker, tEffect);
             }
         }
     }
@@ -243,6 +256,33 @@ public class LovedUp extends JavaPlugin implements Listener {
             sender.sendMessage(ChatColor.LIGHT_PURPLE + "Whoa! Slow down there Romeo!");
         }
     } // cmdLove
+    
+    // ------------------------------------------------------------------------
+    /**
+     * Handle the /hate [<player>] command.
+     *
+     * @param sender command sender.
+     * @param args command arguments.
+     */
+    protected void cmdHate(CommandSender sender, String[] args) {
+        if (args.length == 0) {
+            sender.sendMessage(ChatColor.LIGHT_PURPLE
+                               + "Usage: /hate <player> - Send your hate, anonymously to a player.");
+
+        } else if (args.length == 1) {
+            Player target = Bukkit.getPlayer(args[0]);
+            if (target == null) {
+                sender.sendMessage(ChatColor.RED + "Me too, killer, but that player isn't online.");
+            } else {
+                if (sender instanceof Player) {
+                    sendHate((Player) sender, target);
+                }
+            }
+
+        } else {
+            sender.sendMessage(ChatColor.LIGHT_PURPLE + "Whoa! Slow down there Romeo!");
+        }
+    } // cmdHate
 
     // --------------------------------------------------------------------------
     /**
@@ -251,10 +291,11 @@ public class LovedUp extends JavaPlugin implements Listener {
      * @param sender command sender.
      */
     protected void cmdLoveAll(CommandSender sender) {
-        Long endTime = System.currentTimeMillis() + CONFIG.PLAYER_MS;
+        long endTime = System.currentTimeMillis() + CONFIG.PLAYER_MS;
+        TrackedEffect tEffect = new TrackedEffect(endTime, Effect.HEART, 0);
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (!_unlovable.contains(player.getName())) {
-                _trackedLiving.put(player, endTime);
+                _trackedLiving.put(player, tEffect);
             }
         }
         sender.sendMessage(ChatColor.LIGHT_PURPLE + "Everybody got some!");
@@ -277,10 +318,11 @@ public class LovedUp extends JavaPlugin implements Listener {
         }
         String message = ChatColor.translateAlternateColorCodes('&', msg.toString());
 
-        Long endTime = System.currentTimeMillis() + CONFIG.PLAYER_MS;
+        long endTime = System.currentTimeMillis() + CONFIG.PLAYER_MS;
+        TrackedEffect tEffect = new TrackedEffect(endTime, Effect.HEART, 0);
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (!_unlovable.contains(player.getName())) {
-                _trackedLiving.put(player, endTime);
+                _trackedLiving.put(player, tEffect);
                 spawnFirework(player);
                 if (args.length != 0) {
                     player.sendMessage(message);
@@ -313,6 +355,25 @@ public class LovedUp extends JavaPlugin implements Listener {
             _unlovable.add(name);
         }
     }
+    
+    // ------------------------------------------------------------------------
+    /**
+     * Handle the /unhateable command.
+     *
+     * Mark the command sender as immune to hate and evil.
+     *
+     * @param sender the command sender.
+     */
+    private void cmdUnhateable(CommandSender sender) {
+        String name = sender.getName();
+        if (_unhateable.contains(name)) {
+            sender.sendMessage(ChatColor.LIGHT_PURPLE + "Revenge is a dish best served cold!");
+            _unhateable.remove(name);
+        } else {
+            sender.sendMessage(ChatColor.LIGHT_PURPLE + "You turn the other cheek!");
+            _unhateable.add(name);
+        }
+    }
 
     // ------------------------------------------------------------------------
     /**
@@ -330,10 +391,37 @@ public class LovedUp extends JavaPlugin implements Listener {
             sender.sendMessage(ChatColor.RED + receiver.getName() + " is unlovable. :(");
         } else {
             if (!receiver.hasPermission("lovedup.exempt")) {
-                _trackedLiving.put(receiver, System.currentTimeMillis() + CONFIG.PLAYER_MS);
+                long endTime = System.currentTimeMillis() + CONFIG.PLAYER_MS;
+                TrackedEffect tEffect = new TrackedEffect(endTime, Effect.HEART, 0);
+                _trackedLiving.put(receiver, tEffect);
             }
             sender.sendMessage(ChatColor.LIGHT_PURPLE + receiver.getName() + " is loved.");
             checkMatch(sender.getName(), receiver.getName());
+        }
+    }
+    
+    // ------------------------------------------------------------------------
+    /**
+     * Send hate from the sender to the receiver.
+     *
+     * The receiver will not show particles or fireworks if they are exempt, or
+     * unhateable and in the event that they are unhateable, the sender will be
+     * informed.
+     *
+     * @param sender player sending hate.
+     * @param receiver player receiving hate.
+     */
+    protected void sendHate(Player sender, Player receiver) {
+        if (_unhateable.contains(receiver.getName())) {
+            sender.sendMessage(ChatColor.RED + receiver.getName() + " is unhateable. :D");
+        } else {
+            if (!receiver.hasPermission("lovedup.exempt")) {
+                long endTime = System.currentTimeMillis() + CONFIG.PLAYER_MS;
+                TrackedEffect tEffect = new TrackedEffect(endTime, Effect.VILLAGER_THUNDERCLOUD, 0);
+                _trackedLiving.put(receiver, tEffect);
+            }
+            sender.sendMessage(ChatColor.LIGHT_PURPLE + receiver.getName() + " is hated.");
+            checkNemesis(sender.getName(), receiver.getName());
         }
     }
 
@@ -370,6 +458,52 @@ public class LovedUp extends JavaPlugin implements Listener {
             admirers.add(sender);
         }
     } // checkMatch
+    
+    // ------------------------------------------------------------------------
+    /**
+     * If sender has /hated'd recipient and vice versa, then do a evil sound for
+     * each and notify each player that they are arch nemesies.
+     */
+    protected void checkNemesis(String sender, String receiver) {
+        if (!CONFIG.SELF_MATCH) {
+            if (sender.equals(receiver)) {
+                // You can't match with yourself.
+                return;
+            }
+        }
+
+        if (hates(receiver, sender)) {
+            // Instant match. No need to record nemesis.
+            Player player = Bukkit.getPlayerExact(receiver);
+            long endTime = System.currentTimeMillis() + CONFIG.PLAYER_MS;
+            TrackedEffect tEffect = new TrackedEffect(endTime, Effect.FLAME, 0);
+            
+            if(player != null) {
+            	player.getLocation().getWorld().playEffect(player.getLocation(), Effect.ENDERDRAGON_GROWL, 0);
+            	_trackedLiving.put(player, tEffect);
+            }
+            
+            if (!sender.equals(receiver)) {
+                player = Bukkit.getPlayerExact(sender);
+                if(player != null) {
+                	player.getLocation().getWorld().playEffect(player.getLocation(), Effect.ENDERDRAGON_GROWL, 0);
+                	_trackedLiving.put(player, tEffect);
+                }
+            }
+
+            removeHatred(sender, receiver);
+            removeHatred(receiver, sender);
+
+        } else {
+            // Add sender to the set of receiver's admirers.
+            HashSet<String> nemesies = _nemesies.get(receiver);
+            if (nemesies == null) {
+            	nemesies = new HashSet<String>();
+                _nemesies.put(receiver, nemesies);
+            }
+            nemesies.add(sender);
+        }
+    } // checkNemesis
 
     // ------------------------------------------------------------------------
     /**
@@ -384,6 +518,20 @@ public class LovedUp extends JavaPlugin implements Listener {
         HashSet<String> admirers = _admirers.get(object);
         return admirers != null && admirers.contains(subject);
     }
+    
+    // ------------------------------------------------------------------------
+    /**
+     * Return true if subject hates object.
+     *
+     * @param subject the player name of the subject in question.
+     * @param object the name of the player that may or may not be hated.
+     *
+     * @return true if subject hates object.
+     */
+    protected boolean hates(String subject, String object) {
+        HashSet<String> nemesies = _nemesies.get(object);
+        return nemesies != null && nemesies.contains(subject);
+    }
 
     // ------------------------------------------------------------------------
     /**
@@ -396,6 +544,20 @@ public class LovedUp extends JavaPlugin implements Listener {
         HashSet<String> admirers = _admirers.get(object);
         if (admirers != null) {
             admirers.remove(subject);
+        }
+    }
+    
+    // ------------------------------------------------------------------------
+    /**
+     * Remove subject's hatred of object.
+     *
+     * @param subject the player name of the subject in question.
+     * @param object the name of the player that is hated.
+     */
+    protected void removeHatred(String subject, String object) {
+        HashSet<String> nemesies = _nemesies.get(object);
+        if (nemesies != null) {
+        	nemesies.remove(subject);
         }
     }
 
@@ -473,37 +635,33 @@ public class LovedUp extends JavaPlugin implements Listener {
      * @param checkExempt if true, the entities are checked for exempted players
      *        who will not show hearts.
      */
-    protected <T extends Entity> void showHearts(HashMap<T, Long> targets, double wobble,
-                                                 double yBias, int radius, boolean checkExempt) {
+    protected <T extends Entity> void showEffects(HashMap<T, TrackedEffect> targets, double wobble,
+                                           double yBias, int radius, boolean checkExempt) {
         long now = System.currentTimeMillis();
-        ArrayList<T> removed = new ArrayList<T>();
-        for (Entry<T, Long> entry : targets.entrySet()) {
+        Iterator<Entry<T, TrackedEffect>> itr = targets.entrySet().iterator();
+        while(itr.hasNext()) {
+        	Entry<T, TrackedEffect> entry = itr.next();
             T entity = entry.getKey();
-            Long endTime = entry.getValue();
-            if (entity.isValid()) {
+            TrackedEffect tEffect = entry.getValue();
+            if (now >= tEffect.ttl) {
+            	itr.remove();
+            } else if (entity.isValid()) {
                 if (checkExempt && entity instanceof Player) {
                     Player player = (Player) entity;
                     if (player.hasPermission("lovedup.exempt")) {
-                        removed.add(entity);
+                    	itr.remove();
                         continue;
                     }
                 }
                 Location loc = entity.getLocation();
                 loc.add(scaledRandom(wobble), yBias + scaledRandom(wobble), scaledRandom(wobble));
-                loc.getWorld().playEffect(loc, Effect.HEART, 0, radius);
+                loc.getWorld().playEffect(loc, tEffect.effect, tEffect.data, radius);
 
             } else {
-                removed.add(entity);
-            }
-
-            if (endTime != null && now >= endTime) {
-                removed.add(entity);
+            	itr.remove();
             }
         }
-        for (T entity : removed) {
-            targets.remove(entity);
-        }
-    } // showHearts
+    } // showEffects
 
     // ------------------------------------------------------------------------
     /**
@@ -519,6 +677,7 @@ public class LovedUp extends JavaPlugin implements Listener {
 
     // ------------------------------------------------------------------------
     /**
+
      * Firework types.
      */
     protected static final FireworkEffect.Type[] FIREWORK_TYPES = { Type.BALL, Type.BALL_LARGE, Type.STAR, Type.BURST };
@@ -542,12 +701,12 @@ public class LovedUp extends JavaPlugin implements Listener {
     /**
      * Map tracked projectile to end time of hearts effect.
      */
-    protected HashMap<Projectile, Long> _trackedProjectiles = new HashMap<Projectile, Long>();
+    protected HashMap<Projectile, TrackedEffect> _trackedProjectiles = new HashMap<Projectile, TrackedEffect>();
 
     /**
      * Map tracked living entities (players, mobs) to end time of hearts effect.
      */
-    protected HashMap<LivingEntity, Long> _trackedLiving = new HashMap<LivingEntity, Long>();
+    protected HashMap<LivingEntity, TrackedEffect> _trackedLiving = new HashMap<LivingEntity, TrackedEffect>();
 
     /**
      * For each love recipient name (key), this map records the name of those
@@ -555,10 +714,52 @@ public class LovedUp extends JavaPlugin implements Listener {
      * the corresponding entries are removed.
      */
     protected HashMap<String, HashSet<String>> _admirers = new HashMap<String, HashSet<String>>();
+    
+    /**
+     * For each hate recipient name (key), this map records the name of those
+     * players who sent hate to them, until such time as there is a match, when
+     * the corresponding entries are removed.
+     */
+    protected HashMap<String, HashSet<String>> _nemesies = new HashMap<String, HashSet<String>>();
 
     /**
      * Set of unlovable player names. They don't see hearts or fireworks.
      */
     protected HashSet<String> _unlovable = new HashSet<String>();
+    
+    /**
+     * Set of unhateable player names. They don't see hate.
+     */
+    protected HashSet<String> _unhateable = new HashSet<String>();
+    
+    /**
+     * A structure to store effect data
+     * 
+     */
+    private class TrackedEffect {
+    	/**
+    	 * Time to live
+    	 */
+    	public long ttl;
+    	
+    	/**
+    	 * The effect to display
+    	 */
+    	public Effect effect;
+    	
+    	/**
+    	 * a data bit needed for some effects.
+    	 */
+    	public int data;
+    	
+    	/**
+    	 * Convenience constructor
+    	 */
+    	public TrackedEffect(long ttl, Effect effect, int data) {
+    		this.ttl = ttl;
+    		this.effect = effect;
+    		this.data = data;
+    	}
+    }
 
 } // class LovedUp
