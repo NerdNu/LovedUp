@@ -15,8 +15,16 @@ permissions:
     description: Permission to love everyone simultaneously.
     default: op
 
+  lovedup.hateall:
+    description: Permission to hate everyone simultaneously.
+    default: op
+
   lovedup.love:
     description: Permission to love another player.
+    default: true
+
+  lovedup.hate:
+    description: Permission to hate another player.
     default: true
 
   lovedup.exempt:
@@ -43,11 +51,29 @@ commands:
     usage: |
       /<command> [<message>]: Send fireworks and a coloured (by default pink) message to all players.
 
+  hateall:
+    description: Send hate to all players.
+    permission: lovedup.hateall
+    usage: |
+      /<command> <player>: Send your hate, anonymously to everyone.
+
+  growlall:
+    description: Send hate and a coloured message to all players.
+    permission: lovedup.hateall
+    usage: |
+      /<command> [<message>]: Send hate and a coloured message to all players.
+
   love:
     description: Send love to a player.
     permission: lovedup.love
     usage: |
       /<command> <player>: Send your love, anonymously to a player.
+
+  hate:
+    description: Send hate to a player.
+    permission: lovedup.hate
+    usage: |
+      /<command> <player>: Send your hate, anonymously to a player.
 
   unlovable:
     description: Turn on or off receiving love (hearts, fireworks, messages).
@@ -55,3 +81,10 @@ commands:
     aliases: [unloveable]
     usage: |
       /<command>: Turn on or off receiving love (hearts, fireworks, messages).
+
+  unhateable:
+    description: Turn on or off receiving hate (fire, evil, messages).
+    permission: lovedup.hate
+    aliases: [unhatable]
+    usage: |
+      /<command>: Turn on or off receiving hate (fire, evil, messages).

@@ -27,6 +27,13 @@ Features:
    * Sent `/love` and projectile hits are remembered until the two parties
      match or the server restarts.
 
+ * The `/hate <player-partial-name>` command anonymously sends thunderclouds
+   to the player whose name most closely matches the name argument.
+   The recipient is not informed of the identity of the sender.
+
+   * If no matching player is online, a humourous error message is shown.
+   * if more than one argument is specified, a humourous error message is shown.
+
  * The `/loveall` command allows a staff member to anonymously send hearts
    to all online players.
 
@@ -34,23 +41,37 @@ Features:
    anonymously send hearts, a random firework effect, and an optional message
    with alternate colour codes to all online players.
 
+ * The `/hateall` command allows a staff member to anonymously send thunderclouds
+   to all online players.
+
+ * The `/growlall [<message>]` command allows a staff member to
+   anonymously send thunderclouds, growl effect, and an optional message
+   with alternate colour codes to all online players.
+
  * The `/unloveable` toggles a player's susceptibility to the effects of
    `/love`, `/loveall`, `/sparkall` and the impact of projectiles
    launched at them by other players until the next server restart.
 
+ * The `/unhateable` toggles a player's susceptibility to the effects of
+   `/hate` until the next server restart.
 
 Commands
 --------
 
 | Command                   | Permission      | Description                              |
 | ------------------------- | --------------- | ---------------------------------------- |
-| `/love <player>`          | loveall.love    | Send your love, anonymously to a player. |
-| `/unlovable`              | loveall.love    | Toggle one's own susceptibility to projectiles, `/love`, `/loveall` and `/sparkall` until the next restart. |
-| `/unloveable`             | loveall.love    | Alias of `/unlovable`. |
-| `/loveall`                | loveall.loveall | Send hearts, anonymously to all players except the exempt and the unlovable. |
-| `/sparkall [<message>]`   | loveall.loveall | Send hearts, fireworks and an optional message, anonymously to all players except the exempt and the unlovable. |
-| `/lovedup help`           | loveall.admin   | Show help for the `/lovedup` command. |
-| `/lovedup reload`         | loveall.admin   | Reload the configuration file. |
+| `/love <player>`          | lovedup.love    | Send your love, anonymously to a player. |
+| `/hate <player>`          | lovedup.hate    | Send your hate, anonymously to a player. |
+| `/unlovable`              | lovedup.love    | Toggle one's own susceptibility to projectiles, `/love`, `/loveall` and `/sparkall` until the next restart. |
+| `/unloveable`             | lovedup.love    | Alias of `/unlovable`. |
+| `/unhateable`             | lovedup.hate    | Toggle one's own susceptibility to `/hate`. |
+| `/unhatable`              | lovedup.hate    | Alias of `/unhateable`. |
+| `/loveall`                | lovedup.loveall | Send hearts, anonymously to all players except the exempt and the unlovable. |
+| `/sparkall [<message>]`   | lovedup.loveall | Send hearts, fireworks and an optional message, anonymously to all players except the exempt and the unlovable. |
+| `/hateall`                | lovedup.hateall | Send storm clouds, anonymously to all players except the exempt and unhateable. |
+| `/growlall [<message>]`   | lovedup.hateall | Send storm clouds, growling and optional message, anonymously to all players except the exempt and unhateable. |
+| `/lovedup help`           | lovedup.admin   | Show help for the `/lovedup` command. |
+| `/lovedup reload`         | lovedup.admin   | Reload the configuration file. |
 
 
 Configuration Settings
@@ -91,9 +112,17 @@ Permissions
    * Default: `true`
    * Permission to use `/love` and `/unlovable`.
 
+ * `lovedup.hate`
+   * Default: `true`
+   * Permission to use `/hate` and `/unhateable`.
+
 * `lovedup.loveall`
    * Default: `op`
    * Permission to use `/loveall` and `/sparkall`.
+
+* `lovedup.hateall`
+   * Default: `op`
+   * Permission to use `/hateall` and `/growlall`.
 
 * `lovedup.admin`
    * Default: `op`
