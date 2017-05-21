@@ -15,6 +15,10 @@ permissions:
     description: Permission to love everyone simultaneously.
     default: op
 
+  lovedup.hateall:
+    description: Permission to hate everyone simultaneously.
+    default: op
+
   lovedup.love:
     description: Permission to love another player.
     default: true
@@ -46,6 +50,18 @@ commands:
     permission: lovedup.loveall
     usage: |
       /<command> [<message>]: Send fireworks and a coloured (by default pink) message to all players.
+
+  hateall:
+    description: Send hate to all players.
+    permission: lovedup.hateall
+    usage: |
+      /<command> <player>: Send your hate, anonymously to everyone.
+
+  growlall:
+    description: Send hate and a coloured message to all players.
+    permission: lovedup.hateall
+    usage: |
+      /<command> [<message>]: Send hate and a coloured message to all players.
 
   love:
     description: Send love to a player.

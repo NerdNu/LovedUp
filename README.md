@@ -41,6 +41,13 @@ Features:
    anonymously send hearts, a random firework effect, and an optional message
    with alternate colour codes to all online players.
 
+ * The `/hateall` command allows a staff member to anonymously send thunderclouds
+   to all online players.
+
+ * The `/growlall [<message>]` command allows a staff member to
+   anonymously send thunderclouds, growl effect, and an optional message
+   with alternate colour codes to all online players.
+
  * The `/unloveable` toggles a player's susceptibility to the effects of
    `/love`, `/loveall`, `/sparkall` and the impact of projectiles
    launched at them by other players until the next server restart.
@@ -61,6 +68,8 @@ Commands
 | `/unhatable`              | lovedup.hate    | Alias of `/unhateable`. |
 | `/loveall`                | lovedup.loveall | Send hearts, anonymously to all players except the exempt and the unlovable. |
 | `/sparkall [<message>]`   | lovedup.loveall | Send hearts, fireworks and an optional message, anonymously to all players except the exempt and the unlovable. |
+| `/hateall`                | lovedup.hateall | Send storm clouds, anonymously to all players except the exempt and unhateable. |
+| `/growlall [<message>]`   | lovedup.hateall | Send storm clouds, growling and optional message, anonymously to all players except the exempt and unhateable. |
 | `/lovedup help`           | lovedup.admin   | Show help for the `/lovedup` command. |
 | `/lovedup reload`         | lovedup.admin   | Reload the configuration file. |
 
@@ -110,6 +119,10 @@ Permissions
 * `lovedup.loveall`
    * Default: `op`
    * Permission to use `/loveall` and `/sparkall`.
+
+* `lovedup.hateall`
+   * Default: `op`
+   * Permission to use `/hateall` and `/growlall`.
 
 * `lovedup.admin`
    * Default: `op`

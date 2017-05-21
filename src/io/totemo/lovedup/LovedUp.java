@@ -74,6 +74,14 @@ public class LovedUp extends JavaPlugin implements Listener {
             cmdSparkAll(sender, args);
             return true;
 
+        } else if (command.getName().equalsIgnoreCase("hateall")) {
+            cmdHateAll(sender);
+            return true;
+
+        } else if (command.getName().equalsIgnoreCase("growlall")) {
+            cmdGrowlAll(sender, args);
+            return true;
+
         } else if (command.getName().equalsIgnoreCase("love")) {
             cmdLove(sender, args);
             return true;
@@ -280,13 +288,13 @@ public class LovedUp extends JavaPlugin implements Listener {
             }
 
         } else {
-            sender.sendMessage(ChatColor.LIGHT_PURPLE + "Whoa! Slow down there Romeo!");
+            sender.sendMessage(ChatColor.LIGHT_PURPLE + "Whoa! Slow down there slayer!");
         }
     } // cmdHate
 
     // --------------------------------------------------------------------------
     /**
-     * Handle the /lovall command.
+     * Handle the /loveall command.
      *
      * @param sender command sender.
      */
@@ -336,6 +344,59 @@ public class LovedUp extends JavaPlugin implements Listener {
             sender.sendMessage(ChatColor.LIGHT_PURPLE + "Sent sparks to all!");
         }
     } // cmdSparkAll
+
+    // --------------------------------------------------------------------------
+    /**
+     * Handle the /hateall command.
+     *
+     * @param sender command sender.
+     */
+    protected void cmdHateAll(CommandSender sender) {
+        long endTime = System.currentTimeMillis() + CONFIG.PLAYER_MS;
+        TrackedEffect tEffect = new TrackedEffect(endTime, Effect.VILLAGER_THUNDERCLOUD, 0);
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (!_unhateable.contains(player.getName())) {
+                _trackedLiving.put(player, tEffect);
+            }
+        }
+        sender.sendMessage(ChatColor.LIGHT_PURPLE + "Hate to all!");
+    }
+
+    // ------------------------------------------------------------------------
+    /**
+     * Handle the /growlall [<message>] command.
+     *
+     * @param sender command sender.
+     * @param args command arguments.
+     */
+    protected void cmdGrowlAll(CommandSender sender, String[] args) {
+        StringBuilder msg = new StringBuilder("&d");
+        String sep = "";
+        for (String arg : args) {
+            msg.append(sep);
+            msg.append(arg);
+            sep = " ";
+        }
+        String message = ChatColor.translateAlternateColorCodes('&', msg.toString());
+
+        long endTime = System.currentTimeMillis() + CONFIG.PLAYER_MS;
+        TrackedEffect tEffect = new TrackedEffect(endTime, Effect.VILLAGER_THUNDERCLOUD, 0);
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (!_unhateable.contains(player.getName())) {
+                _trackedLiving.put(player, tEffect);
+                player.getLocation().getWorld().playEffect(player.getLocation(), Effect.ENDERDRAGON_GROWL, 0);
+                if (args.length != 0) {
+                    player.sendMessage(message);
+                }
+            }
+        }
+
+        if (args.length != 0) {
+            sender.sendMessage(ChatColor.LIGHT_PURPLE + "Sent hate and terror to all and the message: " + message);
+        } else {
+            sender.sendMessage(ChatColor.LIGHT_PURPLE + "Sent hate and terror to all!");
+        }
+    } // cmdGrowlAll
 
     // ------------------------------------------------------------------------
     /**
